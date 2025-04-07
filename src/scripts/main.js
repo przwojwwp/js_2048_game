@@ -1,5 +1,7 @@
 /* eslint-disable brace-style */
 /* eslint-disable prettier/prettier */
+/* eslint-disable no-unused-expressions */
+
 'use strict';
 
 // Uncomment the next lines to use your game instance in the browser
@@ -60,6 +62,45 @@ function initializeGame()
       updateUI();
       game.getStatus();
     }
+  });
+
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  document.addEventListener('touchstart', (e) =>
+  {
+    const touch = e.changedTouches[0];
+
+    touchStartX = touch.screenX;
+    touchStartY = touch.screenY;
+  });
+
+  document.addEventListener('touchend', (e) =>
+  {
+    const touch = e.changedTouches[0];
+    const deltaX = touch.screenX - touchStartX;
+    const deltaY = touch.screenY - touchStartY;
+
+    const minSwipeDistance = 30;
+
+    if (game.getStatus() !== 'playing') { return; }
+
+    const isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
+    const isEnoughDistance
+      = Math.max(Math.abs(deltaX), Math.abs(deltaY)) > minSwipeDistance;
+
+    if (!isEnoughDistance) { return; }
+
+    if (isHorizontal)
+    {
+      deltaX > 0 ? game.moveRight() : game.moveLeft();
+    } else
+    {
+      deltaY > 0 ? game.moveDown() : game.moveUp();
+    }
+
+    updateUI();
+    game.getStatus();
   });
 }
 
